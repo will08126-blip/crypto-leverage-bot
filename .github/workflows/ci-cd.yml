@@ -1,0 +1,154 @@
+# GitHub Actions CI/CD Pipeline
+# Tests code and deploys to Render on merge to main
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Run tests on Node.js (Discord Bot)
+  test-node:
+    name: Test Discord Bot
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd discord-bot
+          npm ci
+
+      - name: Run linter
+        run: |
+          cd discord-bot
+          npm run lint
+
+      - name: Run tests
+        run: |
+          cd discord-bot
+          npm test
+
+      - name: Build TypeScript
+        run: |
+          cd discord-bot
+          npm run build
+
+  # Run tests on Python (Trading Engine)
+  test-python:
+    name: Test Trading Engine
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          cd trading-engine
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov black flake8
+
+      - name: Run linting
+        run: |
+          cd trading-engine
+          black --check .
+          flake8 . --max-line-length=88
+
+      - name: Run tests with coverage
+        run: |
+          cd trading-engine
+          pytest --cov=. --cov-report=xml
+
+  # Deploy to Render (only on main branch push)
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+    needs: [test-node, test-python]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          wait-for-success: true
+
+      - name: Notify deployment status
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: '#deployments'
+          SLACK_USERNAME: 'Crypto Leverage Bot'
+          SLACK_TITLE: 'Deployment Status'
+          SLACK_MESSAGE: 'Deployment ${{ job.status }}'
+          SLACK_COLOR: ${{ job.status == 'success' && 'good' || 'danger' }}
+          SLACK_ICON_EMOJI: ':robot_face:'
+
+  # Security scan
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: [test-node, test-python]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run npm audit
+        run: |
+          cd discord-bot
+          npm audit --audit-level=high
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run safety check
+        run: |
+          cd trading-engine
+          pip install safety
+          safety check
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'HIGH,CRITICAL'

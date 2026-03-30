@@ -1,0 +1,54 @@
+# Render.com Deployment Blueprint
+# Deploy your Discord trading bot to Render
+
+services:
+  # Discord Bot Service
+  - type: worker
+    name: crypto-leverage-bot
+    env: node
+    plan: free  # Free tier - can upgrade to starter ($7/mo) for production
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DISCORD_BOT_TOKEN
+        sync: false  # Set manually in Render dashboard
+      - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: EXCHANGE_API_KEY
+        sync: false
+      - key: EXCHANGE_API_SECRET
+        sync: false
+      - key: LOG_LEVEL
+        value: info
+
+  # Trading Engine Service (Python)
+  - type: worker
+    name: trading-engine
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: EXCHANGE_API_KEY
+        sync: false
+      - key: EXCHANGE_API_SECRET
+        sync: false
+      - key: PAPER_TRADING
+        value: "true"
+      - key: DATABASE_URL
+        sync: false  # Optional: Add PostgreSQL for persistence
+
+# PostgreSQL Database (optional, for storing trade history)
+# databases:
+#   - name: trading-db
+#     plan: free
+
+# Cron Jobs (optional, for scheduled tasks)
+# cronJobs:
+#   - name: daily-report
+#     schedule: "0 9 * * *"  # 9 AM UTC daily
+#     command: python scripts/daily_report.py
