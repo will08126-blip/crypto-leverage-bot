@@ -7,7 +7,7 @@ services:
     name: crypto-leverage-bot
     env: node
     plan: free  # Free tier - can upgrade to starter ($7/mo) for production
-    buildCommand: npm install
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -15,6 +15,12 @@ services:
       - key: DISCORD_BOT_TOKEN
         sync: false  # Set manually in Render dashboard
       - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: DISCORD_GUILD_ID
+        sync: false
+      - key: DISCORD_WEBHOOK_URL
+        sync: false
+      - key: DISCORD_CHANNEL_ID
         sync: false
       - key: EXCHANGE_API_KEY
         sync: false
