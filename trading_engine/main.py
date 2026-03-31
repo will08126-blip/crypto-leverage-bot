@@ -9,10 +9,10 @@ import os
 import sys
 from pathlib import Path
 
-# Add the trading_engine directory to path
+# Add the project root (crypto-leverage-bot) to path
 # This allows imports like: from trading_engine.core.bot import TradingBot
-trading_engine_root = Path(__file__).parent
-sys.path.insert(0, str(trading_engine_root))
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 from dotenv import load_dotenv
 from loguru import logger

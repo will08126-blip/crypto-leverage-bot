@@ -1,79 +1,43 @@
-"""
-Trading Models and Data Structures
-"""
-
+"""Trading models and data structures"""
 from dataclasses import dataclass
-from typing import Optional
 from datetime import datetime
+from typing import Optional
 
 
 @dataclass
 class Position:
     """Represents an open trading position"""
-
     symbol: str
-    side: str  # "long" or "short"
+    side: str  # 'long' or 'short'
     entry_price: float
     size: float
-    leverage: int
+    leverage: float
     timestamp: datetime
-    pnl: float = 0.0
+    pnl: Optional[float] = None
 
-    def update_pnl(self, current_price: float):
+    def update_pnl(self, current_price: float) -> None:
         """Update PnL based on current price"""
         if self.side == "long":
-            price_change = current_price - self.entry_price
+            self.pnl = (current_price - self.entry_price) / self.entry_price
         else:
-            price_change = self.entry_price - current_price
+            self.pnl = (self.entry_price - current_price) / self.entry_price
+        self.pnl = self.pnl * self.size * self.leverage
 
-        self.pnl = (price_change / self.entry_price) * self.size * self.leverage
+    def __str__(self):
+        pnl_str = f" PnL: {self.pnl:.2f}" if self.pnl is not None else ""
+        return f"{self.symbol} {self.side.upper()} | Entry: {self.entry_price} | Size: {self.size} | Lev: {self.leverage}x{pnl_str}"
 
 
 @dataclass
 class TradeSignal:
-    """Represents a trading signal from a strategy"""
-
+    """Represents a trading signal"""
     symbol: str
-    direction: str  # "long" or "short"
-    action: str  # "open" or "close"
+    action: str  # 'open' or 'close'
+    direction: str  # 'long' or 'short'
     price: float
     timestamp: datetime
     indicator: Optional[str] = None
-    confidence: float = 0.5
+    confidence: Optional[float] = None
 
     def __str__(self):
-        return f"{self.action.upper()} {self.symbol} {self.direction} @ {self.price} (confidence: {self.confidence:.2f})"
-
-
-@dataclass
-class Trade:
-    """Represents a completed trade"""
-
-    symbol: str
-    side: str
-    entry_price: float
-    exit_price: float
-    size: float
-    leverage: int
-    entry_timestamp: datetime
-    exit_timestamp: datetime
-    pnl: float
-    pnl_percent: float
-
-    @property
-    def is_profitable(self) -> bool:
-        return self.pnl > 0
-
-
-@dataclass
-class AccountBalance:
-    """Represents account balance information"""
-
-    total: float
-    available: float
-    in_positions: float
-    currency: str = "USDT"
-
-    @property
-    def used_percentage(self) -> float:
-        return (self.in_positions / self.total * 100) if self.total > 0 else 0
+        return f"{self.symbol} {self.direction.upper()} | Action: {self.action} | Price: {self.price} | Indicator: {self.indicator}"

@@ -3,7 +3,7 @@ RSI Strategy - Relative Strength Index based trading signals
 """
 
 import numpy as np
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from .base import BaseStrategy
 from trading_engine.models import TradeSignal
