@@ -4,6 +4,9 @@ import { Command } from '../types/index';
 const balanceCommand: Command = {
   name: 'balance',
   description: 'View your account balance',
+  data: new SlashCommandBuilder()
+    .setName('balance')
+    .setDescription('View your account balance'),
   execute: async (interaction: CommandInteraction, client: Client) => {
     // In production, this would fetch from your trading engine
     // For now, return mock data

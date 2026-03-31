@@ -4,6 +4,9 @@ import { Command } from '../types/index';
 const helpCommand: Command = {
   name: 'help',
   description: 'Show all available commands',
+  data: new SlashCommandBuilder()
+    .setName('help')
+    .setDescription('Show all available commands'),
   execute: async (interaction: CommandInteraction, client: Client) => {
     const embed = new EmbedBuilder()
       .setColor('#0099ff')
