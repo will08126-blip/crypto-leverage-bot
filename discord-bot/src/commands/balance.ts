@@ -1,10 +1,10 @@
-import { SlashCommandBuilder, CommandInteraction, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, CommandInteraction, EmbedBuilder, Client } from 'discord.js';
 import { Command } from '../types';
 
 const balanceCommand: Command = {
   name: 'balance',
   description: 'View your account balance',
-  execute: async (interaction: CommandInteraction) => {
+  execute: async (interaction: CommandInteraction, client: Client) => {
     // In production, this would fetch from your trading engine
     // For now, return mock data
     const mockBalance = {

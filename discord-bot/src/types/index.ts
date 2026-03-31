@@ -4,7 +4,7 @@ export interface Command {
   name: string;
   description: string;
   options?: any[];
-  execute: (interaction: CommandInteraction | Message, client: Client) => Promise<void> | void;
+  execute: (interaction: CommandInteraction, client: Client) => Promise<void> | void;
 }
 
 export interface Event {

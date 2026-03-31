@@ -1,10 +1,10 @@
-import { SlashCommandBuilder, CommandInteraction, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, CommandInteraction, EmbedBuilder, Client } from 'discord.js';
 import { Command } from '../types';
 
 const helpCommand: Command = {
   name: 'help',
   description: 'Show all available commands',
-  execute: async (interaction: CommandInteraction) => {
+  execute: async (interaction: CommandInteraction, client: Client) => {
     const embed = new EmbedBuilder()
       .setColor('#0099ff')
       .setTitle('🤖 Crypto Leverage Bot - Help')
