@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, CommandInteraction, EmbedBuilder, Client } from 'discord.js';
-import { Command } from '../types';
+import { Command } from '../types/index';
 
 const helpCommand: Command = {
   name: 'help',

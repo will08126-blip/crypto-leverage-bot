@@ -2,7 +2,7 @@ import { Client, GatewayIntentBits, Collection } from 'discord.js';
 import { config } from 'dotenv';
 import { readdirSync } from 'fs';
 import { join } from 'path';
-import { Command, Event } from './types';
+import { Command, Event } from './types/index';
 
 // Load environment variables
 config();

@@ -1,5 +1,5 @@
 import { Interaction, Client, CommandInteraction } from 'discord.js';
-import { Event } from '../types';
+import { Event } from '../types/index';
 
 const interactionCreateEvent: Event = {
   name: 'interactionCreate',
