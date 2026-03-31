@@ -63,3 +63,15 @@ export interface BotConfig {
   takeProfit: number;
   maxPositions: number;
 }
+
+export interface TradingSignal {
+  symbol: string;
+  direction: 'long' | 'short';
+  entryPrice: number;
+  stopLoss: number;
+  takeProfit: number;
+  leverage: number;
+  indicator: string;
+  confidence: number;
+  timestamp?: Date;
+}

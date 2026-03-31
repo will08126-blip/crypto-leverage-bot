@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import { readdirSync } from 'fs';
 import { join } from 'path';
 import { Command, Event } from './types/index';
+import { initWebhookServer } from './webhookServer';
 
 // Load environment variables
 config();
@@ -69,6 +70,9 @@ if (!token) {
 
 client.login(token).then(() => {
   console.log(`✅ Bot logged in as ${client.user?.tag}`);
+  
+  // Initialize webhook server for receiving signals from trading engine
+  initWebhookServer(client);
 }).catch((error) => {
   console.error('❌ Failed to login:', error);
   process.exit(1);

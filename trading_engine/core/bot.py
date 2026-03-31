@@ -12,6 +12,7 @@ from loguru import logger
 from trading_engine.models import Position, TradeSignal
 from trading_engine.core.exchange import ExchangeManager
 from trading_engine.core.strategy_manager import StrategyManager
+from trading_engine.utils.webhook_sender import send_signal_to_discord
 
 
 class TradingBot:
@@ -80,7 +81,9 @@ class TradingBot:
     async def _execute_trades(self, signals: List[TradeSignal]):
         """Execute trades based on signals"""
         for signal in signals:
+            # Send signal to Discord via webhook
             if signal.action == "open":
+                await self._send_signal_to_discord(signal)
                 await self._open_position(signal)
             elif signal.action == "close":
                 await self._close_position(signal.symbol)
@@ -178,6 +181,35 @@ class TradingBot:
             pnl = (position.entry_price - close_price) / position.entry_price
 
         return pnl * position.size * position.leverage
+
+    async def _send_signal_to_discord(self, signal: TradeSignal):
+        """Send a trading signal to Discord via webhook"""
+        # Calculate stop loss and take profit based on config
+        stop_loss_pct = self.config.get("stop_loss", 0.02)
+        take_profit_pct = self.config.get("take_profit", 0.04)
+        leverage = self.config.get("leverage", 10)
+        
+        # Calculate SL/TP prices
+        if signal.direction == "long":
+            stop_loss = signal.price * (1 - stop_loss_pct)
+            take_profit = signal.price * (1 + take_profit_pct)
+        else:
+            stop_loss = signal.price * (1 + stop_loss_pct)
+            take_profit = signal.price * (1 - take_profit_pct)
+        
+        signal_data = {
+            "symbol": signal.symbol,
+            "direction": signal.direction,
+            "entry_price": signal.price,
+            "stop_loss": stop_loss,
+            "take_profit": take_profit,
+            "leverage": leverage,
+            "indicator": signal.indicator or "N/A",
+            "confidence": signal.confidence or 0.5,
+        }
+        
+        # Send via webhook
+        send_signal_to_discord(signal_data)
 
     async def cleanup(self):
         """Cleanup resources"""

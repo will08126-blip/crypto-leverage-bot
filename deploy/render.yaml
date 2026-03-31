@@ -12,6 +12,10 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: WEBHOOK_PORT
+        value: 10000
+      - key: WEBHOOK_SECRET
+        sync: false  # Set manually in Render dashboard for security
       - key: DISCORD_BOT_TOKEN
         sync: false  # Set manually in Render dashboard
       - key: DISCORD_CLIENT_ID
