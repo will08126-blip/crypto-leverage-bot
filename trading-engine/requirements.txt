@@ -5,8 +5,8 @@ websockets==11.0.3
 loguru==0.7.2
 pydantic==2.5.0
 # Backtesting
-backtrader==1.9.70.123
-vectorbt==0.25.3
+backtrader==1.9.78.123
+vectorbt==0.25.5
 # Technical Analysis
 ta-lib==0.4.28
 # Data visualization
