@@ -1,14 +1,14 @@
-ccxt==4.2.0
-numpy==1.26.2
-pandas==2.1.3
+ccxt==4.2.15
+numpy==1.26.4
+pandas==2.1.4
 python-dotenv==1.0.0
 requests==2.31.0
-websockets==12.0
+websockets==11.0.3
 loguru==0.7.2
 pydantic==2.5.0
 # Backtesting
-backtrader==1.9.77.123
-vectorbt==0.25.5
+backtrader==1.9.70.123
+vectorbt==0.25.3
 # Technical Analysis
 ta-lib==0.4.28
 # Data visualization
