@@ -17,7 +17,11 @@ export interface Event {
 export interface TradingSignal {
   symbol: string;
   direction: 'long' | 'short';
-  price: number;
+  price?: number;
+  entryPrice?: number;
+  stopLoss?: number;
+  takeProfit?: number;
+  leverage?: number;
   timestamp: Date;
   indicator?: string;
   confidence?: number;
@@ -64,14 +68,3 @@ export interface BotConfig {
   maxPositions: number;
 }
 
-export interface TradingSignal {
-  symbol: string;
-  direction: 'long' | 'short';
-  entryPrice: number;
-  stopLoss: number;
-  takeProfit: number;
-  leverage: number;
-  indicator: string;
-  confidence: number;
-  timestamp?: Date;
-}
