@@ -34,8 +34,8 @@ services:
     name: trading-engine
     env: python
     plan: starter
-    buildCommand: pip install --only-binary :all: -r requirements.txt || pip install -r requirements.txt
-    startCommand: python main.py
+    buildCommand: cd trading_engine && pip install --only-binary :all: -r requirements.txt || pip install -r requirements.txt
+    startCommand: cd trading_engine && python main.py
     envVars:
       - key: NODE_ENV
         value: production
