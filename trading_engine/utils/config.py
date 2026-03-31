@@ -14,7 +14,7 @@ def load_config() -> Dict:
 
     config = {
         # Exchange configuration
-        "exchange": os.getenv("EXCHANGE", "binance"),
+        "exchange": os.getenv("EXCHANGE", "kraken"),
         "paper_trading": os.getenv("PAPER_TRADING", "true").lower() == "true",
 
         # Trading parameters
@@ -44,8 +44,8 @@ def load_config() -> Dict:
         "bb_period": int(os.getenv("BB_PERIOD", "20")),
         "bb_std": float(os.getenv("BB_STD", "2.0")),
 
-        # Symbols to trade
-        "symbols": os.getenv("SYMBOLS", "BTC/USDT,ETH/USDT").split(","),
+        # Symbols to trade (Kraken format: BTC/USD, ETH/USD, etc.)
+        "symbols": os.getenv("SYMBOLS", "BTC/USD,ETH/USD,SOL/USD,XRP/USD,DOGE/USD").split(","),
 
         # Discord integration
         "discord_webhook": os.getenv("DISCORD_WEBHOOK_URL"),

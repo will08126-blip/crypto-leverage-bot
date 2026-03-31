@@ -76,16 +76,8 @@ class ExchangeManager:
             prices = {symbol: ticker["last"] for symbol, ticker in tickers.items()}
             return prices
         except Exception as e:
-            logger.warning(f"Failed to fetch prices: {e}")
-            # Return mock prices for testing
-            logger.info("Using mock prices for paper trading")
-            return {
-                "BTC/USDT": 68500.0,
-                "ETH/USDT": 3450.0,
-                "SOL/USDT": 145.0,
-                "XRP/USDT": 0.52,
-                "DOGE/USDT": 0.12,
-            }
+            logger.error(f"Failed to fetch prices: {e}")
+            raise
 
     async def get_price(self, symbol: str) -> Optional[float]:
         """Get current price for a single symbol"""
