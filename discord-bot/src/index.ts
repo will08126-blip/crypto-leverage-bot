@@ -29,7 +29,7 @@ client.commands = new Collection();
 
 // Load commands
 const commandsPath = join(__dirname, 'commands');
-const commandFiles = readdirSync(commandsPath).filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
+const commandFiles = readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {
   const filePath = join(commandsPath, file);
@@ -41,7 +41,7 @@ for (const file of commandFiles) {
 
 // Load events
 const eventsPath = join(__dirname, 'events');
-const eventFiles = readdirSync(eventsPath).filter((file) => file.endsWith('.ts') || file.endsWith('.js'));
+const eventFiles = readdirSync(eventsPath).filter((file) => file.endsWith('.js'));
 
 for (const file of eventFiles) {
   const filePath = join(eventsPath, file);
