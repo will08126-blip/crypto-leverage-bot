@@ -8,7 +8,7 @@ pydantic==1.10.15
 backtrader==1.9.78.123
 vectorbt==0.26.0
 # Technical Analysis
-ta-lib==0.4.28
+ta==0.9.0
 # Data visualization
 matplotlib==3.8.2
 plotly==5.18.0
