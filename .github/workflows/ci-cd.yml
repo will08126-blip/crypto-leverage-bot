@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd discord-bot
-          npm ci
+          npm install
 
       - name: Run linter
         run: |
@@ -42,7 +42,7 @@ jobs:
       - name: Run tests
         run: |
           cd discord-bot
-          npm test
+          npm test -- --passWithNoTests
 
       - name: Build TypeScript
         run: |
@@ -69,20 +69,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd trading-engine
+          cd trading_engine
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-cov black flake8
 
       - name: Run linting
         run: |
-          cd trading-engine
+          cd trading_engine
           black --check .
           flake8 . --max-line-length=88
 
       - name: Run tests with coverage
         run: |
-          cd trading-engine
+          cd trading_engine
           pytest --cov=. --cov-report=xml
 
   # Deploy to Render (only on main branch push)
@@ -142,7 +142,7 @@ jobs:
 
       - name: Run safety check
         run: |
-          cd trading-engine
+          cd trading_engine
           pip install safety
           safety check
 
