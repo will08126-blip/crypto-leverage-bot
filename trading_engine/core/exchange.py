@@ -24,14 +24,18 @@ class ExchangeManager:
 
     def _initialize_exchange(self):
         """Initialize the CCXT exchange"""
+        self.simulate = False  # If True, we simulate trades locally
+        api_key = os.getenv("EXCHANGE_API_KEY")
+        secret = os.getenv("EXCHANGE_API_SECRET")
+        
         try:
             exchange_class = getattr(ccxt, self.exchange_name)
             
             if self.is_paper_trading:
                 # Use paper trading exchange
                 self.exchange = exchange_class({
-                    "apiKey": os.getenv("EXCHANGE_API_KEY"),
-                    "secret": os.getenv("EXCHANGE_API_SECRET"),
+                    "apiKey": api_key,
+                    "secret": secret,
                     "enableRateLimit": True,
                     "sandbox": True,
                 })
@@ -39,20 +43,24 @@ class ExchangeManager:
             else:
                 # Use live exchange
                 self.exchange = exchange_class({
-                    "apiKey": os.getenv("EXCHANGE_API_KEY"),
-                    "secret": os.getenv("EXCHANGE_API_SECRET"),
+                    "apiKey": api_key,
+                    "secret": secret,
                     "enableRateLimit": True,
                 })
                 logger.info(f"Initialized {self.exchange_name} in live mode")
-
+            
+            # If no API keys, we'll simulate order creation (but still fetch market data)
+            if not api_key or not secret:
+                self.simulate = True
+                logger.info("No API keys provided: order creation will be simulated locally")
+                
         except Exception as e:
             logger.error(f"Failed to initialize exchange: {e}")
-            # Fallback to paper trading without API keys
-            self.exchange = ccxt.binance({
-                "enableRateLimit": True,
-                "sandbox": True,
-            })
-            logger.warning("Using exchange without API keys (paper trading only)")
+            # Fallback to simulation
+            self.simulate = True
+            logger.warning("Falling back to simulated paper trading")
+            # Also create a dummy exchange for public data (optional)
+            self.exchange = None
 
     async def connect(self):
         """Connect to exchange"""
@@ -97,7 +105,34 @@ class ExchangeManager:
         order_type: str = "market",
         reduce_only: bool = False,
     ) -> Optional[Dict]:
-        """Create an order on the exchange"""
+        """Create an order on the exchange (or simulate locally)"""
+        if self.simulate:
+            # Simulate order creation locally
+            # Get current price for the symbol
+            try:
+                current_price = await self.get_price(symbol)
+                if current_price is None:
+                    logger.warning(f"Could not fetch price for {symbol}, using mock price")
+                    current_price = 50000.0  # fallback mock price
+            except Exception as e:
+                logger.warning(f"Error fetching price for {symbol}: {e}, using mock price")
+                current_price = 50000.0
+            
+            # Generate a mock order ID and timestamp
+            import time
+            from datetime import datetime
+            order_id = f"sim_{int(time.time())}_{symbol}"
+            timestamp = datetime.now()
+            
+            logger.info(f"Simulated order created: {symbol} {side} {size} @ {current_price}")
+            return {
+                "id": order_id,
+                "price": current_price,
+                "size": size,
+                "side": side,
+                "timestamp": timestamp,
+            }
+        
         try:
             # Set leverage for futures
             if "future" in self.exchange_name or self.exchange_name in ["binance", "bybit"]:
@@ -122,12 +157,19 @@ class ExchangeManager:
             )
 
             logger.info(f"Order created: {order}")
+            # Convert timestamp (ms) to datetime
+            from datetime import datetime
+            ts = order["timestamp"]
+            if isinstance(ts, (int, float)):
+                timestamp = datetime.fromtimestamp(ts / 1000)
+            else:
+                timestamp = datetime.now()
             return {
                 "id": order["id"],
                 "price": order["average"] or order["price"],
                 "size": order["amount"],
                 "side": side,
-                "timestamp": order["timestamp"],
+                "timestamp": timestamp,
             }
 
         except Exception as e:

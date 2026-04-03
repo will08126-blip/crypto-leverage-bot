@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, CommandInteraction, EmbedBuilder, Client } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, CacheType, EmbedBuilder, Client } from 'discord.js';
 import { Command } from '../types/index';
 
 const helpCommand: Command = {
@@ -7,20 +7,15 @@ const helpCommand: Command = {
   data: new SlashCommandBuilder()
     .setName('help')
     .setDescription('Show all available commands'),
-  execute: async (interaction: CommandInteraction, client: Client) => {
+  execute: async (interaction: ChatInputCommandInteraction<CacheType>, client: Client) => {
     const embed = new EmbedBuilder()
       .setColor('#0099ff')
       .setTitle('🤖 Crypto Leverage Bot - Help')
       .setDescription('Here are the available commands:')
       .addFields(
         {
-          name: '/trade <symbol> <direction> <leverage>',
-          value: 'Open a new position. Example: `/trade BTC/USDT long 10`',
-          inline: false,
-        },
-        {
-          name: '/close <symbol>',
-          value: 'Close an open position. Example: `/close BTC/USDT`',
+          name: '/balance',
+          value: 'View your account balance',
           inline: false,
         },
         {
@@ -29,13 +24,13 @@ const helpCommand: Command = {
           inline: false,
         },
         {
-          name: '/balance',
-          value: 'View your account balance',
+          name: '/resetbalance [amount]',
+          value: 'Reset account balance to default ($1000) or specified amount',
           inline: false,
         },
         {
-          name: '/backtest <strategy> <symbol> <timeframe>',
-          value: 'Run backtest on historical data. Example: `/backtest rsi_strategy BTC/USDT 1h`',
+          name: '/setbalance <amount>',
+          value: 'Set account balance to a specific amount',
           inline: false,
         },
         {

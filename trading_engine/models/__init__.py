@@ -38,6 +38,7 @@ class TradeSignal:
     timestamp: datetime
     indicator: Optional[str] = None
     confidence: Optional[float] = None
+    strategy: Optional[str] = None
 
     def __str__(self):
         return f"{self.symbol} {self.direction.upper()} | Action: {self.action} | Price: {self.price} | Indicator: {self.indicator}"

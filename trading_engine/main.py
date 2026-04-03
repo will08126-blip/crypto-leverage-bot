@@ -35,6 +35,14 @@ async def main():
 
     # Initialize trading bot
     bot = TradingBot(config)
+    bot.loop = asyncio.get_running_loop()
+
+    # Start API server for remote control (paper trading simulation)
+    import api
+    api.bot_instance = bot
+    api.virtual_account = bot.virtual_account
+    api.start_api_thread(host='0.0.0.0', port=5000)
+    logger.info("🌐 HTTP API server started on port 5000")
 
     try:
         await bot.run()

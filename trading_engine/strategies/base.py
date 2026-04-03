@@ -41,6 +41,7 @@ class BaseStrategy(ABC):
             timestamp=datetime.now(),
             indicator=indicator,
             confidence=confidence,
+            strategy=self.name,
         )
 
     def should_close_position(self, symbol: str, current_price: float) -> bool:

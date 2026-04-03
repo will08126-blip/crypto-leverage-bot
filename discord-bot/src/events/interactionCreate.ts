@@ -1,4 +1,4 @@
-import { Interaction, Client, CommandInteraction } from 'discord.js';
+import { Interaction, Client, ChatInputCommandInteraction } from 'discord.js';
 import { Event } from '../types/index';
 
 const interactionCreateEvent: Event = {
@@ -14,7 +14,7 @@ const interactionCreateEvent: Event = {
     }
 
     try {
-      await command.execute(interaction as CommandInteraction, client);
+      await command.execute(interaction as ChatInputCommandInteraction, client);
     } catch (error) {
       console.error(`Error executing command ${interaction.commandName}:`, error);
       await interaction.reply({ content: 'An error occurred while executing this command.', ephemeral: true });

@@ -23,6 +23,10 @@ def load_config() -> Dict:
         "stop_loss": float(os.getenv("STOP_LOSS", "0.02")),
         "take_profit": float(os.getenv("TAKE_PROFIT", "0.04")),
         "max_positions": int(os.getenv("MAX_POSITIONS", "3")),
+        "min_confidence": float(os.getenv("MIN_CONFIDENCE", "0.5")),
+        "initial_balance": float(os.getenv("INITIAL_BALANCE", "1000.0")),
+        "require_consensus": bool(os.getenv("REQUIRE_CONSENSUS", "True")),
+        "min_strategy_agreement": int(os.getenv("MIN_STRATEGY_AGREEMENT", "2")),
 
         # Trading intervals
         "interval": int(os.getenv("INTERVAL", "1")),

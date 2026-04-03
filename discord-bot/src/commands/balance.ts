@@ -1,5 +1,6 @@
-import { SlashCommandBuilder, CommandInteraction, EmbedBuilder, Client } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, CacheType, EmbedBuilder, Client } from 'discord.js';
 import { Command } from '../types/index';
+import axios from 'axios';
 
 const balanceCommand: Command = {
   name: 'balance',
@@ -7,39 +8,28 @@ const balanceCommand: Command = {
   data: new SlashCommandBuilder()
     .setName('balance')
     .setDescription('View your account balance'),
-  execute: async (interaction: CommandInteraction, client: Client) => {
-    // In production, this would fetch from your trading engine
-    // For now, return mock data
-    const mockBalance = {
-      total: 10000.50,
-      available: 8500.25,
-      inPositions: 1500.25,
-      currency: 'USDT',
-    };
+  execute: async (interaction: ChatInputCommandInteraction<CacheType>, client: Client) => {
+    try {
+      const response = await axios.get('http://localhost:5000/balance');
+      const balance = response.data.balance;
+      
+      const embed = new EmbedBuilder()
+        .setColor('#00ff00')
+        .setTitle('💰 Account Balance')
+        .addFields(
+          {
+            name: 'Total Balance',
+            value: `${balance.toFixed(2)} USDT`,
+            inline: true,
+          },
+        )
+        .setTimestamp();
 
-    const embed = new EmbedBuilder()
-      .setColor('#00ff00')
-      .setTitle('💰 Account Balance')
-      .addFields(
-        {
-          name: 'Total Balance',
-          value: `${mockBalance.total.toFixed(2)} ${mockBalance.currency}`,
-          inline: true,
-        },
-        {
-          name: 'Available',
-          value: `${mockBalance.available.toFixed(2)} ${mockBalance.currency}`,
-          inline: true,
-        },
-        {
-          name: 'In Positions',
-          value: `${mockBalance.inPositions.toFixed(2)} ${mockBalance.currency}`,
-          inline: true,
-        },
-      )
-      .setTimestamp();
-
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+      await interaction.reply({ embeds: [embed], ephemeral: true });
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+      await interaction.reply({ content: 'Failed to fetch balance. Is the trading engine running?', ephemeral: true });
+    }
   },
 };
 
